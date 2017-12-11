@@ -1,23 +1,29 @@
-var PvaToken = artifacts.require("./PvaToken.sol");
-var StandartToken = artifacts.require("./zeppelin/token/StandardToken.sol");
-var BasicToken = artifacts.require("./zeppelin/token/BasicToken.sol");
-var ERC20 = artifacts.require("./zeppelin/token/ERC20.sol");
-var ERC20Basic = artifacts.require("./zeppelin/token/ERC20Basic.sol");
-var SafeMath = artifacts.require("./zeppelin/math/SafeMath.sol");
+const SafeMath = artifacts.require('./SafeMath.sol');
+const ERC20Basic = artifacts.require('./ERC20Basic.sol');
+const BasicToken = artifacts.require('./BasicToken.sol');
+const ERC20 = artifacts.require('./ERC20.sol');
+const StandardToken = artifacts.require('./StandardToken.sol');
+const PvaToken = artifacts.require('./PvaToken.sol');
 
-module.exports = function(deployer) {
-  deployer.deploy(SafeMath);
-  deployer.link(SafeMath, BasicToken);
-  deployer.deploy(BasicToken);
-  deployer.deploy(ERC20Basic);
-  deployer.link(ERC20Basic, BasicToken);
+module.exports = (deployer) => {
+    deployer.deploy(SafeMath);
+    deployer.deploy(ERC20Basic);
 
-//  deployer.deploy(BasicToken);
-  deployer.link(BasicToken, StandartToken);
-  deployer.deploy(ERC20);
-  deployer.link(ERC20, StandartToken);
+    deployer.link(ERC20Basic, BasicToken);
+    deployer.link(SafeMath, BasicToken);
 
-  deployer.deploy(StandartToken);
-  deployer.link(StandartToken, PvaToken);
-  deployer.deploy(PvaToken);
+    deployer.deploy(BasicToken);
+
+
+    deployer.link(ERC20Basic, ERC20);
+    deployer.deploy(ERC20);
+
+    deployer.link(BasicToken, StandardToken);
+    deployer.link(ERC20, StandardToken);
+    deployer.deploy(StandardToken);
+
+    deployer.link(StandardToken, PvaToken);
+    deployer.deploy(PvaToken);
+
+
 };
