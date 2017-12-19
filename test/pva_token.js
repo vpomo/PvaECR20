@@ -8,12 +8,13 @@ contract('PvaToken', function (accounts) {
     });
     it("should symbol=PVA for contract PvaToken", function () {
         return PvaToken.deployed().then(function (instance) {
-            return instance.getSymbol.call();
+            return instance.symbol.call();
         }).then(function (currentSymbol) {
             assert.equal(currentSymbol, "PVA", " an not empty string has arrived");
         });
     });
-/*
+
+
     it("should totalSupply=2e+22 for contract PvaToken", function () {
         return PvaToken.deployed().then(function (instance) {
             return instance.totalSupply.call();
@@ -22,7 +23,8 @@ contract('PvaToken', function (accounts) {
             assert.equal(totalPva, 2e+22, " an equivalent to 2e+22");
         });
     });
-*/
+
+
     it("should balanceOf() for contract PvaToken", function () {
         var account_one = accounts[0];
         var account_two = accounts[1];
@@ -52,8 +54,8 @@ contract('PvaToken', function (accounts) {
 
             return pva.transfer(account_two, 20000, {from: account_one});
         }).then(function (resultTransfer) {
-            console.log("result transfer = " + resultTransfer);
-            //assert.equal(resultTransfer, true, " Result transfer to address_two equal true");
+            console.log("result transfer = " + resultTransfer.tx);
+            assert.notEqual(resultTransfer.tx, undefined, " Result transfer to address_two equal true");
 
             return pva.balanceOf.call(account_one);
         }).then(function (balance) {

@@ -44,18 +44,31 @@ library SafeMath {
 
 contract ERC20Basic {
     uint256 public totalSupply;
+
+    bool public transfersEnabled;
+
     function balanceOf(address who) public view returns (uint256);
+
     function transfer(address to, uint256 value) public returns (bool);
+
     event Transfer(address indexed from, address indexed to, uint256 value);
 }
 
 contract ERC20 {
     uint256 public totalSupply;
+
+    bool public transfersEnabled;
+
     function balanceOf(address _owner) public constant returns (uint256 balance);
+
     function transfer(address _to, uint256 _value) public returns (bool success);
+
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success);
+
     function approve(address _spender, uint256 _value) public returns (bool success);
+
     function allowance(address _owner, address _spender) public constant returns (uint256 remaining);
+
     event Transfer(address indexed _from, address indexed _to, uint256 _value);
     event Approval(address indexed _owner, address indexed _spender, uint256 _value);
 }
@@ -73,6 +86,7 @@ contract BasicToken is ERC20Basic {
     function transfer(address _to, uint256 _value) public returns (bool) {
         require(_to != address(0));
         require(_value <= balances[msg.sender]);
+        require(transfersEnabled);
 
         // SafeMath.sub will throw if there is not enough balance.
         balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -107,6 +121,7 @@ contract StandardToken is ERC20, BasicToken {
         require(_to != address(0));
         require(_value <= balances[_from]);
         require(_value <= allowed[_from][msg.sender]);
+        require(transfersEnabled);
 
         balances[_from] = balances[_from].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -167,21 +182,37 @@ contract StandardToken is ERC20, BasicToken {
 }
 
 contract SinglePvaToken is StandardToken {
-    using SafeMath for uint256;
 
     string public constant name = "PvaToken";
     string public constant symbol = "PVA";
     uint8 public constant decimals = 18;
-
     uint256 public constant INITIAL_SUPPLY = 20000 * (10 ** uint256(decimals));
+
+    address public owner;
+
+    event OwnerChanged(address indexed previousOwner, address indexed newOwner);
 
     function SinglePvaToken() public {
         totalSupply = INITIAL_SUPPLY;
         balances[msg.sender] = INITIAL_SUPPLY;
+        owner = msg.sender;
+        transfersEnabled = true;
     }
 
-    function getSymbol() public pure returns (string) {
-        return symbol;
+    modifier onlyOwner() {
+        require(msg.sender == owner);
+        _;
+    }
+
+    function changeOwner(address newOwner) onlyOwner public returns (bool){
+        require(newOwner != address(0));
+        OwnerChanged(owner, newOwner);
+        owner = newOwner;
+        return true;
+    }
+
+    function enableTransfers(bool _transfersEnabled) onlyOwner public {
+        transfersEnabled = _transfersEnabled;
     }
 
 }
