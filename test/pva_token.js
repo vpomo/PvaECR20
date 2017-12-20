@@ -67,6 +67,13 @@ contract('PvaToken', function (accounts) {
             console.log("balanceOf(" + account_two + "): " + balance);
             assert.equal(balance, 20000, " an balanceOf(address_two) equal 20000");
 
+/*
+            return pva.getCurrentData.call();
+        }).then(function (curDate) {
+            console.log("curDate =  " + curDate);
+*/
+
+
         });
     });
 
